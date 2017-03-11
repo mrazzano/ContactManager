@@ -1,0 +1,101 @@
+﻿@{ ViewBag.Title = "Contacts"; }
+<h3 style="margin-bottom: 25px">Contacts</h3>
+<div class="alert alert-danger fade in" data-bind="visible: $data.errors">
+    <a href="#" class="close" data-dismiss="alert">&times;</a>
+    <strong>Error: </strong><span data-bind="text: $data.errors"></span>
+</div>
+<div class="row">
+    <div class="container" style="padding-bottom: 10px">
+        <div class="pull-left">
+            <a data-toggle="modal" data-bind="click: $root.new" href="#">
+                Create New
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+            </a>
+        </div>
+        <div class="pull-right">
+            <span>Page Size:</span>
+            <select data-bind="options: $root.pageSizeOptions, value: $root.pageSize"></select>
+        </div>
+    </div>
+</div>
+<div style="display: none" data-bind="visible: rows">
+    <table class="table table-condensed">
+        <thead class="table-header">
+            <tr>
+                <!-- ko foreach: $root.columns -->
+                <th>
+                    <a class="sortable" data-bind="html: header, css: state, click: $root.sortClick.bind(property)"></a>
+                </th>
+                <!-- /ko -->
+                <th></th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: pagedList">
+            <tr>
+                <td data-bind="text: $data.LastName"></td>
+                <td data-bind="text: $data.FirstName"></td>
+                <td data-bind="text: $data.EmailAddress"></td>
+                <td>
+                    <a href="javascript:void(0);" data-bind="click: $root.edit">Edit</a> |
+                    <a href="javascript:void(0);" data-bind="click: $root.delete">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul class="pagination pagination-sm">
+        <li><a href="#" data-bind="click: previousPage, css: {'disabled': pageIndex() <= 0}">Previous</a></li>
+    </ul>
+    <ul class="pagination pagination-sm" data-bind="foreach:new Array(maxPageIndex() + 1)">
+        <li data-bind="css: {'active': $index() == $parent.pageIndex()}">
+            <a href="#" data-bind="text:$index() + 1, click:$parent.gotoPage.bind($data, $index())">0</a>
+        </li>
+    </ul>
+    <ul class="pagination pagination-sm">
+        <li><a href="#" data-bind="click: nextPage, css: {'disabled': pageIndex() >= maxPageIndex()}">Next</a></li>
+    </ul>
+</div>
+<div id="modalbox" class="modal" data-bind="modal: showDialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-bind="text: $data.isUpdate() ? 'Edit Contact' : 'Create Contact'"></h3>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-bordered">
+                    <tr>
+                        <td>First Name:</td>
+                        <td>
+                            <input type="text" data-bind="value: $data.FirstName" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Last Name:</td>
+                        <td>
+                            <input type="text" data-bind="value: $data.LastName" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Email Address:</td>
+                        <td>
+                            <input type="text" data-bind="value: $data.EmailAddress" class="form-control">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bind="click: $root.save">Save</button>
+                <button class="btn btn-default" data-bind="click: $root.cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/contact")
+}
+<script>
+    $(function () {
+        ko.applyBindings(new ContactViewModel(@Html.Raw(ViewBag.InitialData)));
+    });
+</script>
